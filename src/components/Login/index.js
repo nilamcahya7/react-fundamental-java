@@ -1,4 +1,4 @@
-import "./style.css"
+import "./style.css";
 import { useState } from 'react';
 
 let Login = () => {
@@ -6,48 +6,11 @@ let Login = () => {
   let [password, setPassword] = useState('');
   let [message, setMessage] = useState(null);
 
-  let submitLogin = async (e) => {
-    e.preventDefault();
-
-    let userLogin = {
-      username : username,
-      password : password
-    }
-
-    try{
-      let response = await fetch('http://localhost:8080/api/account/login', {
-        method : 'POST',
-        headers : {
-          'Content-Type' : 'application/json'
-        },
-        body : JSON.stringify(userLogin)
-      });
-
-      let data = await response.json();
-
-      if(response.ok){
-        if (data.message === "Not Verified Yet!"){
-          setMessage("Your account is not verified yet!")
-        } else if (data.message === "Login Success!"){
-          setMessage("login success")
-          setUsername('');
-          setPassword('');
-          localStorage.setItem('username', username);
-          window.location.href = "/dashboard";
-        } else {
-          setMessage("Credentials Doesn't Match Any Records!")
-        }
-      }
-    } catch (error) {
-      setMessage(error.message)
-    }
-  
-  };
-
   return (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <div className="card transparent-card glass w-50">
-        <div className="card-header"> {message && (
+        <div className="card-header">
+          {message && (
             <div className="alert alert-success mb-4">
               <p>{message}</p>
             </div>
@@ -55,7 +18,7 @@ let Login = () => {
           <h1>Login</h1>
         </div>
         <div className="card-body">
-          <form onSubmit={submitLogin}>
+          <form onSubmit={(e) => submitLogin(e, username, password, setMessage)}>
             <div className="form-group mb-3">
               <label htmlFor="username" className="form-label">
                 Username:
@@ -83,7 +46,39 @@ let Login = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+let submitLogin = (e, username, password, setMessage) => {
+  e.preventDefault();
+
+  let userLogin = {
+    username: username,
+    password: password,
+  };
+
+  fetch('http://localhost:8080/api/account/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userLogin),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.message === "Not Verified Yet!") {
+        setMessage("Your account is not verified yet!");
+      } else if (data.message === "Login Success!") {
+        setMessage("Login success");
+        localStorage.setItem('username', username);
+        window.location.href = "/dashboard";
+      } else {
+        setMessage("Credentials Doesn't Match Any Records!");
+      }
+    })
+    .catch((error) => {
+      setMessage(error.message);
+    });
+};
 
 export default Login;
