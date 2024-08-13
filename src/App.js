@@ -1,7 +1,7 @@
 // import logo from './logo.svg';
 import './App.css';
-import Login from './components/Login/login';
-import Dashboard from './components/Dashboard/dashboard';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const App = () => {
